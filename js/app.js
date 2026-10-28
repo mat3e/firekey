@@ -51,8 +51,7 @@
 
 
   /* Adjust title text as needed. */
-  deck.addEventListener('show', function(e) {
-    var card = e.target;
+  function updateHeader(card) {
     var title = $('h1');
     if (card.hasAttribute('data-title')) {
       title.textContent = card.getAttribute('data-title');
@@ -61,7 +60,10 @@
     }
     // XXX this will plaster over other classes if present.
     $('#main-header').className = 'card-' + card.id;
+  }
 
+  deck.addEventListener('show', function(e) {
+    updateHeader(e.target);
     deck.focus();
   });
 
@@ -215,6 +217,33 @@
   });
 
 
+  // Delete buttons. Delegated, as list items are created after load.
+  $('#accounts').addEventListener('click', function(e) {
+    if (!e.target.classList.contains('delete')) {
+      return;
+    }
+    e.preventDefault();
+    var li = e.target.parentNode;
+    var i = lis.indexOf(li);
+    if (i < 0) {
+      return;
+    }
+
+    accounts.splice(i, 1);
+    localforage.setItem('accounts', accounts).then(function() {
+      lis.splice(i, 1);
+      li.parentNode.removeChild(li);
+
+      if (accounts.length === 0) {
+        stopUpdating();
+        deck.selectedCard = $('#welcome');
+      } else {
+        refreshAccounts();
+      }
+    });
+  });
+
+
   // Party time
   document.addEventListener('DOMComponentsLoaded', function() {
     localforage.getItem('accounts').then(function(data) {
@@ -227,23 +256,9 @@
         accounts = [];
         deck.selectedCard = $('#welcome');
       }
-      document.querySelectorAll('.delete').forEach(del => del.addEventListener('click', function(e) {
-        e.preventDefault();
-        var li = this.parentNode;
-        var i = Array.prototype.indexOf.call(li.parentNode.childNodes, li);
-
-        accounts.splice(i, 1);
-        localforage.setItem('accounts', accounts).then(function() {
-          lis.splice(i, 1);
-          li.parentNode.removeChild(li);
-
-          if (accounts.length === 0) {
-            stopUpdating();
-          } else {
-            refreshAccounts();
-          }
-        })
-      }));
+      // The deck fires no 'show' event if the card is already selected
+      // (e.g. #main is the default), so sync the header explicitly.
+      updateHeader(deck.selectedCard);
     })
   });
 
