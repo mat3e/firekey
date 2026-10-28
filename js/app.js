@@ -227,8 +227,8 @@
         accounts = [];
         deck.selectedCard = $('#welcome');
       }
-      document.querySelectorAll('#main .delete').forEach(del => del.addEventListener('click', function() {
-        var delButton = this;
+      document.querySelectorAll('.delete').forEach(del => del.addEventListener('click', function(e) {
+        e.preventDefault();
         var li = this.parentNode;
         var i = Array.prototype.indexOf.call(li.parentNode.childNodes, li);
 
