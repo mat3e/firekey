@@ -113,6 +113,7 @@
 
         const delBtn = document.createElement('button');
         delBtn.className = 'delete';
+        delBtn.textContent = 'Delete';
         li.appendChild(delBtn);
       }
 
@@ -139,26 +140,6 @@
       }
     }
   });
-
-  // Long click for delete.
-  document.querySelectorAll('#main .delete').forEach(del => del.addEventListener('click', function() {
-    var delButton = this;
-    var li = this.parentNode;
-    var i = Array.prototype.indexOf.call(li.parentNode.childNodes, li);
-
-    accounts.splice(i, 1);
-    localforage.setItem('accounts', accounts).then(function() {
-      lis.splice(i, 1);
-      $('#main').appendChild(delButton);
-      li.parentNode.removeChild(li);
-
-      if (accounts.length === 0) {
-        stopUpdating();
-      } else {
-        refreshAccounts();
-      }
-    })
-  }));
 
   // Main add button.
   $('#main-header .add').addEventListener('click', function() {
@@ -246,6 +227,23 @@
         accounts = [];
         deck.selectedCard = $('#welcome');
       }
+      document.querySelectorAll('#main .delete').forEach(del => del.addEventListener('click', function() {
+        var delButton = this;
+        var li = this.parentNode;
+        var i = Array.prototype.indexOf.call(li.parentNode.childNodes, li);
+
+        accounts.splice(i, 1);
+        localforage.setItem('accounts', accounts).then(function() {
+          lis.splice(i, 1);
+          li.parentNode.removeChild(li);
+
+          if (accounts.length === 0) {
+            stopUpdating();
+          } else {
+            refreshAccounts();
+          }
+        })
+      }));
     })
   });
 
