@@ -110,6 +110,10 @@
         var span = document.createElement('span');
         span.setAttribute('class', 'name');
         li.appendChild(span);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete';
+        li.appendChild(delBtn);
       }
 
       // Show account name and latest code.
@@ -137,7 +141,7 @@
   });
 
   // Long click for delete.
-  $('#main .delete').addEventListener('click', function() {
+  document.querySelectorAll('#main .delete').forEach(del => del.addEventListener('click', function() {
     var delButton = this;
     var li = this.parentNode;
     var i = Array.prototype.indexOf.call(li.parentNode.childNodes, li);
@@ -154,44 +158,7 @@
         refreshAccounts();
       }
     })
-  });
-
-  var pressTimer;
-  $('#accounts').addEventListener('pointerup', function() {
-    window.clearTimeout(pressTimer);
-    return false;
-  });
-  $('#accounts').addEventListener('pointerdown', function(e) {
-    pressTimer = window.setTimeout(function() {
-      var li;
-
-      if (['li', 'span'].indexOf(e.target.tagName.toLowerCase()) === -1) {
-        return;
-      } else if (e.target.matches('li>span')) {
-        li = e.target.parentNode;
-      } else {
-        li = e.target;
-      }
-
-
-      stopUpdating();
-
-      var delButton = $('#main .delete');
-      li.appendChild(delButton);
-
-      // Catch delete button un-click in a second or so.
-      window.setTimeout(function() {
-        function reset() {
-          $('#main').appendChild($('#main .delete'));
-          document.body.removeEventListener('click', reset);
-          refreshAccounts();
-        }
-        document.body.addEventListener('click', reset);
-      }, 1500);
-
-    }, 1000);
-    return false;
-  });
+  }));
 
   // Main add button.
   $('#main-header .add').addEventListener('click', function() {
